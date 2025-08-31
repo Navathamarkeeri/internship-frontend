@@ -2,25 +2,67 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignupPage.css';
 
+// Reusable Password Input Component
+const PasswordInput = ({ label, value, onChange }) => {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div className="form-group">
+      <label>{label}</label>
+      <div className="password-input">
+        <input
+          type={show ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          required
+        />
+        <button
+          type="button"
+          className="password-toggle"
+          onClick={() => setShow(!show)}
+        >
+          {show ? 'Hide' : 'Show'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const SignupPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+
+  // Password strength validation
+  const validatePassword = (pwd) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    return regex.test(pwd);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle signup logic here
+
+    if (!validatePassword(password)) {
+      alert('Password must be at least 8 characters, include uppercase, lowercase, number, and special character.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       alert('Passwords do not match');
       return;
     }
+
     console.log('Signup attempt:', { email, password });
-    // Redirect to dashboard after successful signup with email
     navigate('/dashboard', { state: { userEmail: email } });
   };
+
+  const isFormValid =
+    email &&
+    password &&
+    confirmPassword &&
+    password === confirmPassword &&
+    validatePassword(password);
 
   return (
     <div className="signup-container">
@@ -54,73 +96,24 @@ const SignupPage = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="password-input">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  {showPassword ? (
-                    <>
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                      <line x1="1" y1="1" x2="23" y2="23"></line>
-                    </>
-                  ) : (
-                    <>
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </>
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
+          <PasswordInput
+            label="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <div className="password-input">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                id="confirmPassword"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  {showConfirmPassword ? (
-                    <>
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                      <line x1="1" y1="1" x2="23" y2="23"></line>
-                    </>
-                  ) : (
-                    <>
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </>
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
+          <PasswordInput
+            label="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
 
-          <button type="submit" className="signup-button">
+          {/* Live password match check */}
+          {confirmPassword && password !== confirmPassword && (
+            <p className="error-text">Passwords do not match</p>
+          )}
+
+          <button type="submit" className="signup-button" disabled={!isFormValid}>
             Create Account
           </button>
         </form>
