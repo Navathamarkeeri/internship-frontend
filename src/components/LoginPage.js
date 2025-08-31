@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
-// ✅ Add backend URL
-const API_BASE = "https://internship-backend-3-zip5.onrender.com";
+// ✅ Use backend URL from .env
+const API_BASE = process.env.REACT_APP_API_URL;
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -30,7 +30,7 @@ const LoginPage = () => {
         return;
       }
 
-      // Save token in localStorage for authenticated requests
+      // Save token for authenticated requests
       localStorage.setItem('token', data.token);
 
       // Navigate to dashboard with email
@@ -63,6 +63,7 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit} className="login-form">
           {error && <p className="error">{error}</p>}
+
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
