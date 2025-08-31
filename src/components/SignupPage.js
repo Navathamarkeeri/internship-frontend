@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignupPage.css';
 
-// Reusable Password Input Component
 const PasswordInput = ({ label, value, onChange }) => {
   const [show, setShow] = useState(false);
-
   return (
     <div className="form-group">
       <label>{label}</label>
@@ -33,14 +31,14 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
-  // Password strength validation
   const validatePassword = (pwd) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     return regex.test(pwd);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validatePassword(password)) {
@@ -53,8 +51,28 @@ const SignupPage = () => {
       return;
     }
 
-    console.log('Signup attempt:', { email, password });
-    navigate('/dashboard', { state: { userEmail: email } });
+    try {
+      const response = await fetch(`${API_URL}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message || 'Signup failed');
+        return;
+      }
+
+      const data = await response.json();
+      // Optionally store token in localStorage/sessionStorage if returned
+      // localStorage.setItem('token', data.token);
+
+      navigate('/dashboard', { state: { userEmail: email } });
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert('Error connecting to server');
+    }
   };
 
   const isFormValid =
@@ -108,7 +126,6 @@ const SignupPage = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
 
-          {/* Live password match check */}
           {confirmPassword && password !== confirmPassword && (
             <p className="error-text">Passwords do not match</p>
           )}
@@ -128,3 +145,4 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+
