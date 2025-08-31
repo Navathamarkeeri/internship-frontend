@@ -172,7 +172,7 @@ const Dashboard = () => {
   // Calculate dynamic counts
   const savedJobsCount = internships.filter(job => job.isSaved).length;
   const totalApplications = applications.length;
-  const notificationCount = savedJobsCount + applicationStats.interviews;
+
 
   return (
     <div className="dashboard-container">
