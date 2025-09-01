@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
 // ✅ Use backend URL from .env
-const API_BASE = process.env.REACT_APP_API_URL;
+const API_BASE = process.env.REACT_APP_API_URL || "https://intern-backend-yfxc.onrender.com"
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

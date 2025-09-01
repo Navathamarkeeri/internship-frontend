@@ -12,7 +12,7 @@ const IconButton = ({ children, onClick, className }) => (
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const API_URL = process.env.REACT_APP_API_URL;
+  const API_URL = process.env.REACT_APP_API_URL || "https://intern-backend-yfxc.onrender.com";
 
   const [activeTab, setActiveTab] = useState('Browse Jobs');
   const [searchQuery, setSearchQuery] = useState('Search Data Science internships in Bangalore');
